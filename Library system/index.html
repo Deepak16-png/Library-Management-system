@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Athenaeum — Library Management System</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<!-- Chart.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ============ APP SHELL ============ -->
+<div class="app" id="app">
+
+  <!-- SIDEBAR -->
+  <aside class="shelf-nav" id="shelfNav">
+    <div class="shelf-brand">
+      <div class="brand-mark"><i class="fa-solid fa-book-bookmark"></i></div>
+      <div class="brand-text">
+        <span class="brand-title">Athenaeum</span>
+        <span class="brand-sub">Library System</span>
+      </div>
+    </div>
+
+    <nav class="shelf-links" id="navLinks">
+      <button class="shelf-link active" data-page="dashboard"><i class="fa-solid fa-grip"></i><span>Dashboard</span></button>
+      <button class="shelf-link" data-page="books"><i class="fa-solid fa-book"></i><span>Books</span></button>
+      <button class="shelf-link" data-page="categories"><i class="fa-solid fa-tags"></i><span>Categories</span></button>
+      <button class="shelf-link" data-page="statistics"><i class="fa-solid fa-chart-pie"></i><span>Statistics</span></button>
+      <button class="shelf-link" data-page="settings"><i class="fa-solid fa-gear"></i><span>Settings</span></button>
+    </nav>
+
+    <div class="shelf-footer">
+      <button class="theme-toggle" id="themeToggle" title="Toggle dark / light mode (Alt+T)">
+        <i class="fa-solid fa-moon"></i>
+        <span>Dark mode</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MOBILE TOPBAR -->
+  <header class="mobile-topbar">
+    <button class="icon-btn" id="mobileMenuBtn" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+    <div class="brand-mark small"><i class="fa-solid fa-book-bookmark"></i></div>
+    <span class="brand-title small">Athenaeum</span>
+    <button class="icon-btn" id="mobileThemeBtn" aria-label="Toggle theme"><i class="fa-solid fa-moon"></i></button>
+  </header>
+  <div class="nav-scrim" id="navScrim"></div>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ===================== DASHBOARD ===================== -->
+    <section class="page active" id="page-dashboard">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Overview</p>
+          <h1>Good to see you</h1>
+          <p class="page-desc">Here's what's happening in the stacks today.</p>
+        </div>
+        <button class="btn btn-primary" id="dashAddBookBtn"><i class="fa-solid fa-plus"></i> Add a book</button>
+      </div>
+
+      <div class="stat-grid" id="statGrid">
+        <div class="stat-card accent-green">
+          <div class="stat-icon"><i class="fa-solid fa-books"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Total books</span>
+            <span class="stat-value" data-counter="0" id="statTotal">0</span>
+          </div>
+          <svg class="stat-wave" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 15 Q 25 5, 50 15 T 100 15" /></svg>
+        </div>
+        <div class="stat-card accent-teal">
+          <div class="stat-icon"><i class="fa-solid fa-check-circle"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Available</span>
+            <span class="stat-value" data-counter="0" id="statAvailable">0</span>
+          </div>
+          <svg class="stat-wave" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 15 Q 25 5, 50 15 T 100 15" /></svg>
+        </div>
+        <div class="stat-card accent-rust">
+          <div class="stat-icon"><i class="fa-solid fa-hand-holding"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Borrowed</span>
+            <span class="stat-value" data-counter="0" id="statBorrowed">0</span>
+          </div>
+          <svg class="stat-wave" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 15 Q 25 5, 50 15 T 100 15" /></svg>
+        </div>
+        <div class="stat-card accent-brass">
+          <div class="stat-icon"><i class="fa-solid fa-tags"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Categories</span>
+            <span class="stat-value" data-counter="0" id="statCategories">0</span>
+          </div>
+          <svg class="stat-wave" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 15 Q 25 5, 50 15 T 100 15" /></svg>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h3><i class="fa-solid fa-clock-rotate-left"></i> Recently added</h3>
+          </div>
+          <div class="panel-body" id="recentBooksList"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3><i class="fa-solid fa-star"></i> Favorites</h3>
+          </div>
+          <div class="panel-body" id="favoriteBooksList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== BOOKS ===================== -->
+    <section class="page" id="page-books">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Collection</p>
+          <h1>Books</h1>
+          <p class="page-desc">Browse, search, and manage every title on the shelf.</p>
+        </div>
+        <div class="page-head-actions">
+          <button class="btn btn-ghost" id="importBtn"><i class="fa-solid fa-file-import"></i> Import</button>
+          <button class="btn btn-ghost" id="exportBtn"><i class="fa-solid fa-file-export"></i> Export</button>
+          <button class="btn btn-ghost" id="printBtn"><i class="fa-solid fa-print"></i> Print</button>
+          <button class="btn btn-primary" id="addBookBtn"><i class="fa-solid fa-plus"></i> Add book</button>
+        </div>
+      </div>
+      <input type="file" id="importFile" accept="application/json" hidden />
+
+      <div class="toolbar">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchTitle" placeholder="Search by title... (press /)" />
+        </div>
+        <div class="search-box">
+          <i class="fa-solid fa-user-pen"></i>
+          <input type="text" id="searchAuthor" placeholder="Search by author..." />
+        </div>
+        <select id="filterCategory" class="select-input">
+          <option value="">All categories</option>
+        </select>
+        <select id="filterStatus" class="select-input">
+          <option value="">All statuses</option>
+          <option value="Available">Available</option>
+          <option value="Borrowed">Borrowed</option>
+        </select>
+        <select id="sortBy" class="select-input">
+          <option value="">Sort by...</option>
+          <option value="title-asc">Title (A–Z)</option>
+          <option value="title-desc">Title (Z–A)</option>
+          <option value="author-asc">Author (A–Z)</option>
+          <option value="author-desc">Author (Z–A)</option>
+          <option value="year-desc">Year (newest)</option>
+          <option value="year-asc">Year (oldest)</option>
+        </select>
+      </div>
+
+      <div class="table-wrap panel">
+        <div id="booksEmptyState" class="empty-state" hidden>
+          <div class="empty-illustration"><i class="fa-solid fa-feather-pointed"></i></div>
+          <h3>The shelf is empty</h3>
+          <p>Add your first book to start building the collection.</p>
+          <button class="btn btn-primary" id="emptyAddBookBtn"><i class="fa-solid fa-plus"></i> Add a book</button>
+        </div>
+
+        <div class="table-scroll" id="booksTableScroll">
+          <table class="data-table" id="booksTable">
+            <thead>
+              <tr>
+                <th>Cover</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Category</th>
+                <th>Year</th>
+                <th>Status</th>
+                <th class="th-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="booksTableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </section>
+
+    <!-- ===================== CATEGORIES ===================== -->
+    <section class="page" id="page-categories">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Organization</p>
+          <h1>Categories</h1>
+          <p class="page-desc">Group titles the way your shelves are arranged.</p>
+        </div>
+        <button class="btn btn-primary" id="addCategoryBtn"><i class="fa-solid fa-plus"></i> Add category</button>
+      </div>
+
+      <div class="category-grid" id="categoryGrid"></div>
+    </section>
+
+    <!-- ===================== STATISTICS ===================== -->
+    <section class="page" id="page-statistics">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Insights</p>
+          <h1>Statistics</h1>
+          <p class="page-desc">A closer look at how the collection is shaping up.</p>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="panel chart-panel">
+          <div class="panel-head"><h3><i class="fa-solid fa-chart-pie"></i> Books per category</h3></div>
+          <div class="chart-holder"><canvas id="categoryPieChart"></canvas></div>
+        </div>
+        <div class="panel chart-panel">
+          <div class="panel-head"><h3><i class="fa-solid fa-chart-simple"></i> Available vs Borrowed</h3></div>
+          <div class="chart-holder"><canvas id="statusBarChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:20px;">
+        <div class="panel-head"><h3><i class="fa-solid fa-clock-rotate-left"></i> Recently added</h3></div>
+        <div class="panel-body" id="statsRecentList"></div>
+      </div>
+    </section>
+
+    <!-- ===================== SETTINGS ===================== -->
+    <section class="page" id="page-settings">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Preferences</p>
+          <h1>Settings</h1>
+          <p class="page-desc">Tune the app and manage your data.</p>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="panel">
+          <div class="panel-head"><h3><i class="fa-solid fa-palette"></i> Appearance</h3></div>
+          <div class="panel-body settings-row">
+            <div>
+              <strong>Theme</strong>
+              <p class="muted">Switch between light and dark mode.</p>
+            </div>
+            <button class="btn btn-ghost" id="settingsThemeToggle"><i class="fa-solid fa-moon"></i> Toggle theme</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3><i class="fa-solid fa-database"></i> Data</h3></div>
+          <div class="panel-body settings-row">
+            <div>
+              <strong>Export library data</strong>
+              <p class="muted">Download all books and categories as JSON.</p>
+            </div>
+            <button class="btn btn-ghost" id="settingsExportBtn"><i class="fa-solid fa-file-export"></i> Export</button>
+          </div>
+          <div class="panel-body settings-row">
+            <div>
+              <strong>Import library data</strong>
+              <p class="muted">Restore from a previously exported JSON file.</p>
+            </div>
+            <button class="btn btn-ghost" id="settingsImportBtn"><i class="fa-solid fa-file-import"></i> Import</button>
+          </div>
+          <div class="panel-body settings-row">
+            <div>
+              <strong>Download report</strong>
+              <p class="muted">A printable summary of the whole collection.</p>
+            </div>
+            <button class="btn btn-ghost" id="settingsReportBtn"><i class="fa-solid fa-file-lines"></i> Download</button>
+          </div>
+          <div class="panel-body settings-row">
+            <div>
+              <strong>Reset all data</strong>
+              <p class="muted">Erase every book and category from this browser.</p>
+            </div>
+            <button class="btn btn-danger" id="settingsResetBtn"><i class="fa-solid fa-trash"></i> Reset</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3><i class="fa-solid fa-keyboard"></i> Keyboard shortcuts</h3></div>
+          <div class="panel-body">
+            <ul class="shortcut-list">
+              <li><kbd>/</kbd><span>Focus search</span></li>
+              <li><kbd>N</kbd><span>Add new book</span></li>
+              <li><kbd>Alt</kbd> + <kbd>T</kbd><span>Toggle theme</span></li>
+              <li><kbd>Esc</kbd><span>Close open dialog</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============ BOOK MODAL ============ -->
+<div class="modal-overlay" id="bookModalOverlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 id="bookModalTitle">Add a book</h2>
+      <button class="icon-btn" id="closeBookModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="bookForm" class="modal-body">
+      <div class="form-grid">
+        <div class="form-field span-2">
+          <label>Title <span class="req">*</span></label>
+          <input type="text" id="fTitle" required maxlength="150" />
+          <span class="field-error" id="err-fTitle"></span>
+        </div>
+        <div class="form-field span-2">
+          <label>Author <span class="req">*</span></label>
+          <input type="text" id="fAuthor" required maxlength="100" />
+          <span class="field-error" id="err-fAuthor"></span>
+        </div>
+        <div class="form-field">
+          <label>Category <span class="req">*</span></label>
+          <select id="fCategory" required></select>
+          <span class="field-error" id="err-fCategory"></span>
+        </div>
+        <div class="form-field">
+          <label>ISBN <span class="req">*</span></label>
+          <input type="text" id="fISBN" required maxlength="20" placeholder="978-3-16-148410-0" />
+          <span class="field-error" id="err-fISBN"></span>
+        </div>
+        <div class="form-field">
+          <label>Publisher</label>
+          <input type="text" id="fPublisher" maxlength="100" />
+        </div>
+        <div class="form-field">
+          <label>Published year <span class="req">*</span></label>
+          <input type="number" id="fYear" required min="1000" max="2100" />
+          <span class="field-error" id="err-fYear"></span>
+        </div>
+        <div class="form-field">
+          <label>Language</label>
+          <input type="text" id="fLanguage" maxlength="40" placeholder="English" />
+        </div>
+        <div class="form-field">
+          <label>Number of pages</label>
+          <input type="number" id="fPages" min="1" />
+        </div>
+        <div class="form-field">
+          <label>Shelf number</label>
+          <input type="text" id="fShelf" maxlength="20" placeholder="A-12" />
+        </div>
+        <div class="form-field">
+          <label>Status</label>
+          <select id="fStatus">
+            <option value="Available">Available</option>
+            <option value="Borrowed">Borrowed</option>
+          </select>
+        </div>
+        <div class="form-field span-2">
+          <label>Description</label>
+          <textarea id="fDescription" rows="3" maxlength="600"></textarea>
+        </div>
+        <div class="form-field span-2">
+          <label>Cover image (optional)</label>
+          <input type="file" id="fCoverFile" accept="image/*" />
+          <div class="cover-preview-row">
+            <img id="fCoverPreview" class="cover-preview" hidden />
+            <button type="button" class="btn btn-ghost btn-sm" id="removeCoverBtn" hidden>Remove cover</button>
+          </div>
+        </div>
+      </div>
+      <input type="hidden" id="fId" />
+      <input type="hidden" id="fCoverData" />
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="cancelBookBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="saveBookBtn"><i class="fa-solid fa-floppy-disk"></i> Save book</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ VIEW BOOK MODAL ============ -->
+<div class="modal-overlay" id="viewModalOverlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2>Book details</h2>
+      <button class="icon-btn" id="closeViewModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="viewModalBody"></div>
+  </div>
+</div>
+
+<!-- ============ CATEGORY MODAL ============ -->
+<div class="modal-overlay" id="categoryModalOverlay">
+  <div class="modal modal-sm" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 id="categoryModalTitle">Add category</h2>
+      <button class="icon-btn" id="closeCategoryModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="categoryForm" class="modal-body">
+      <div class="form-field">
+        <label>Category name <span class="req">*</span></label>
+        <input type="text" id="fCatName" required maxlength="40" />
+        <span class="field-error" id="err-fCatName"></span>
+      </div>
+      <div class="form-field">
+        <label>Accent color</label>
+        <div class="swatch-row" id="colorSwatches"></div>
+        <input type="hidden" id="fCatColor" value="#2F5233" />
+      </div>
+      <input type="hidden" id="fCatId" />
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="cancelCategoryBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save category</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ CONFIRM DIALOG ============ -->
+<div class="modal-overlay" id="confirmOverlay">
+  <div class="modal modal-xs" role="alertdialog" aria-modal="true">
+    <div class="confirm-body">
+      <div class="confirm-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <h3 id="confirmTitle">Are you sure?</h3>
+      <p id="confirmMessage">This action cannot be undone.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="confirmCancelBtn">Cancel</button>
+      <button class="btn btn-danger" id="confirmOkBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TOAST CONTAINER ============ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ============ SCROLL TO TOP ============ -->
+<button class="scroll-top" id="scrollTopBtn" aria-label="Scroll to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<!-- ============ LOADING OVERLAY ============ -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spine">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
